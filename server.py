@@ -29,6 +29,9 @@ class Serv(BaseHTTPRequestHandler):
             elif self.path == '/net1.jpg':
                 self.path = '/net1.jpg'
                 mimetype = 'image/jpg'
+            else:
+                self.path = 'wrong.html'
+                mimetype = 'text/html'
             file_to_open = readfile(self.path)
             self.send_response(200)
             self.send_header('Content-type', mimetype)
