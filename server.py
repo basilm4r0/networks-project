@@ -1,45 +1,57 @@
 import http.server
 from http.server import HTTPServer, BaseHTTPRequestHandler
-from of import curdir, sep
 
-PORT = 9000
+port = 9000
+curpath = "/home/basilmari/Desktop/ENCS3320/project_1/"
 
 class Serv(BaseHTTPRequestHandler):
     def do_GET(self):
-        if self.path == '/' or '/en' or '/ar' or 'main.css':
+        try:
+            header = 'HTTP/1.1 200 OK\n'
             if self.path == '/':
                 self.path = '/main_en.html'
+                mimetype = 'text/html'
             elif self.path == '/en':
                 self.path = '/main_en.html'
+                mimetype = 'text/html'
             elif self.path == '/ar':
                 self.path = '/main_ar.html'
+                mimetype = 'text/html'
             elif self.path == '/index.html':
                 self.path = '/index.html'
+                mimetype = 'text/html'
             elif self.path == '/main.css':
                 self.path = '/main.css'
-            try:
-                file_to_open = open(self.path[1:]).read()
-                self.send_response(200)
-            except:
-                file_to_open = "File not found"
-                self.send_response(404)
-            self.end_headers()
-            self.wfile.write(bytes(file_to_open, 'utf-8'))
-        elif self.path == '/bzu.png' or '/net1.jpg':
-            if self.path == '/bzu.png':
+                mimetype = 'text/css'
+            elif self.path == '/bzu.png':
                 self.path = '/bzu.png'
+                mimetype = 'image/png'
             elif self.path == '/net1.jpg':
                 self.path = '/net1.jpg'
-            try:
-                file_to_open = open(curdir + sep + self.path, 'rb')
-                self.send_response(200)
-            except:
-                file_to_open = "File not found"
-                self.send_response(404)
-            self.send_header('Content-type', 'image/png')
+                mimetype = 'image/jpg'
+            file_to_open = readfile(self.path)
+            self.send_response(200)
+            self.send_header('Content-type', mimetype)
             self.end_headers()
-            self.wfile.write(file_to_open.read())
+            self.wfile.write(file_to_open)
+        except IOError:
+            self.send_error(404, "File not found %s" % self.path)
 
+def readfile(path):
+    file = open(curpath + path, 'rb')
+    response = file.read()
+    file.close()
+    return response
 
-httpd = HTTPServer(('localhost', PORT), Serv)
-httpd.serve_forever()
+def main():
+    try:
+        server = HTTPServer(('', port), Serv)
+        print("Web server running on  port %s" % port)
+        server.serve_forever()
+
+    except KeyboardInterrupt:
+        print("^C pressed, stopping web server...")
+        server.socket.close()
+
+if __name__ == '__main__':
+    main()
