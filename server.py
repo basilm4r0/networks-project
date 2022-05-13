@@ -21,7 +21,8 @@ class Serv(BaseHTTPRequestHandler):
                     self.send_header('Location', 'https://www.birzeit.edu')
                     self.end_headers()
                 self.wfile.write('\n'.encode('utf-8'))
-            else:
+            if (self.path == '/' or self.path == '/en' or self.path == '/ar' or self.path == '/index.html' or self.path == '/main.css' or self.path
+            == '/bzu.png' or self.path == '/net1.jpg'):
                 if self.path == '/':
                     self.path = '/main_en.html'
                     mimetype = 'text/html'
@@ -43,14 +44,20 @@ class Serv(BaseHTTPRequestHandler):
                 elif self.path == '/net1.jpg':
                     self.path = '/net1.jpg'
                     mimetype = 'image/jpg'
-                else:
-                    self.path = 'wrong.html'
-                    mimetype = 'text/html'
                 file_to_open = readfile(self.path)
                 self.send_response(200)
                 self.send_header('Content-type', mimetype)
                 self.end_headers()
                 self.wfile.write(file_to_open)
+            else:
+                self.path = 'wrong.html'
+                mimetype = 'text/html'
+                file_to_open = readfile(self.path)
+                self.send_response(404)
+                self.send_header('Content-type', mimetype)
+                self.end_headers()
+                self.wfile.write(file_to_open)
+
         except IOError:
             self.send_error(404, "File not found %s" % self.path)
 
