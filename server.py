@@ -22,7 +22,7 @@ class Serv(BaseHTTPRequestHandler):
                     self.end_headers()
                 self.wfile.write('\n'.encode('utf-8'))
             if (self.path == '/' or self.path == '/en' or self.path == '/ar' or self.path == '/index.html' or self.path == '/main.css' or self.path
-            == '/bzu.png' or self.path == '/net1.jpg'):
+            == '/bzu.png' or self.path == '/net1.jpg' or self.path == '/networking2.jpg'):
                 if self.path == '/':
                     self.path = '/main_en.html'
                     mimetype = 'text/html'
@@ -44,19 +44,37 @@ class Serv(BaseHTTPRequestHandler):
                 elif self.path == '/net1.jpg':
                     self.path = '/net1.jpg'
                     mimetype = 'image/jpg'
+                elif self.path == '/networking2.jpg':
+                    self.path = '/networking2.jpg'
+                    mimetype = 'image/jpg'
                 file_to_open = readfile(self.path)
                 self.send_response(200)
                 self.send_header('Content-type', mimetype)
                 self.end_headers()
                 self.wfile.write(file_to_open)
             else:
-                self.path = 'wrong.html'
+                file_to_open = '''<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title> Error </title>
+  </head>
+  <body>
+    <h1> HTTP/1.1 404 Not Found </h1>
+    <h2 style="color:red;"> The file is not found </h2>
+    <div>
+      <b> Ahmad Abu Masood - 1192647</b> <br/>
+      <b> Basil Mari - 1191027</b> <br/>
+      <b> Mohammad Nafee - 1173027</b>
+    </div>
+    <p> The IP number of the Client is %s</p>
+    <p> The port number of the Client is %s</p>
+  </body>
+</html>''' % (self.address_string(), port)
                 mimetype = 'text/html'
-                file_to_open = readfile(self.path)
                 self.send_response(404)
                 self.send_header('Content-type', mimetype)
                 self.end_headers()
-                self.wfile.write(file_to_open)
+                self.wfile.write(file_to_open.encode('utf-8'))
 
         except IOError:
             self.send_error(404, "File not found %s" % self.path)
